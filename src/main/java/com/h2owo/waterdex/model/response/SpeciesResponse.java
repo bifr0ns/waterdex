@@ -6,11 +6,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class SpeciesResponse {
-  private Species species;
-  private Species endangeredSpecies;
+  private String msgResponse;
+  private List<Species> species;
+  private List<Species> endangeredSpecies;
 }

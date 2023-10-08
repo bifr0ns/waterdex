@@ -6,13 +6,11 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class SpeciesResponseDTO {
-  private List<Species> species;
-  private List<Species> endangeredSpecies;
+public class SpecieResponse {
+  private String msgResponse;
+  private Species specie;
 }

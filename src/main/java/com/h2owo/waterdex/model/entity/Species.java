@@ -11,6 +11,15 @@ import lombok.NoArgsConstructor;
 @Builder
 public class Species {
   private String name;
-  private Integer id;
-  private String picture;
+  private String scientificName;
+  private Integer iucnId;
+  private String scope;
+  private String severity;
+  private String score;
+  private String invasive;
+  private String squareUrl;
+  private String thumbUr;
+  private String smallUrl;
+  private String mediumUrl;
+  private String largeUrl;
 }

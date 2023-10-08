@@ -29,6 +29,7 @@ public class InfoService implements IInfoService {
     if (info.isEmpty()) {
       return WaterQuality.builder()
               .info(Constants.NOT_FOUND)
+              .xml(Constants.NOT_FOUND)
               .color(Constants.NA)
               .build();
     }
@@ -44,6 +45,7 @@ public class InfoService implements IInfoService {
 
     return WaterQuality.builder()
             .info(split[0])
+            .xml(String.valueOf(info))
             .color(color[1])
             .build();
   }

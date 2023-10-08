@@ -10,4 +10,6 @@ public class Constants {
   public static final String YES = "yes";
   public static final String NOT_FOUND = "No information was found on this location :(";
   public static final String NA = "NA";
+  public static final String PHOTOS = "photos";
+  public static final String SCIENCE_NAME = "science_name";
 }

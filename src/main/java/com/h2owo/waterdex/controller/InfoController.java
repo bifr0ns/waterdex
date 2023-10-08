@@ -40,13 +40,10 @@ public class InfoController {
   ) {
 
     WaterQuality waterQuality = infoService.getWaterQuality(lat, lon);
-//    SpeciesResponse speciesResponse = infoService.getSpecies(lat, lon);
 
     InfoResponse response = InfoResponse.builder()
             .msgResponse(Constants.SUCCESS)
             .waterQuality(waterQuality)
-//            .species(speciesResponse.getSpecies())
-//            .endangeredSpecies(speciesResponse.getEndangeredSpecies())
             .build();
 
     return new ResponseEntity<>(
