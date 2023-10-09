@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.h2owo.waterdex.util.Constants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -31,12 +32,12 @@ public class ClosestLocationFinder {
           // Iterate through the array elements
           for (JsonNode arrayElement : node) {
             // Check if the current element has 'id', 'latitude', and 'longitude' fields
-            if (arrayElement.has("id") && arrayElement.has("latitude") && arrayElement.has("longitude")) {
+            if (arrayElement.has("id") && arrayElement.has(Constants.LAT) && arrayElement.has(Constants.LONG)) {
               // Create a new ObjectNode with 'id', 'latitude', and 'longitude'
               ObjectNode objectNode = factory.objectNode();
               objectNode.put("id", arrayElement.get("id").asInt());
-              objectNode.put("latitude", arrayElement.get("latitude").asText());
-              objectNode.put("longitude", arrayElement.get("longitude").asText());
+              objectNode.put(Constants.LAT, arrayElement.get(Constants.LAT).asText());
+              objectNode.put(Constants.LONG, arrayElement.get(Constants.LONG).asText());
 
               // Add the ObjectNode to the new ArrayNode
               newArray.add(objectNode);
@@ -67,7 +68,7 @@ public class ClosestLocationFinder {
 
     for (JsonNode node : coordinates) {
       double distance = calculateHaversineDistance(targetLatitude, targetLongitude,
-              node.get("latitude").asDouble(), node.get("longitude").asDouble());
+              node.get(Constants.LAT).asDouble(), node.get(Constants.LONG).asDouble());
       if (distance < closestDistance) {
         closestDistance = distance;
         closest = node;

@@ -2,6 +2,7 @@ package com.h2owo.waterdex.util.component;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.h2owo.waterdex.util.Urls;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -19,12 +20,13 @@ public class OpenAI {
   @Autowired
   private Environment environment;
 
-  public StringBuilder getResponse(String model, String prompt) {
+  public StringBuilder getResponse(String prompt) {
+    String model = environment.getProperty("openai.model");
 
     StringBuilder response = new StringBuilder();
     try {
       // Define the API endpoint URL
-      String apiUrl = "https://api.openai.com/v1/chat/completions";
+      String apiUrl = Urls.OPENAI;
 
       // Define your API key
       String apiKey = environment.getProperty("keys.openai");

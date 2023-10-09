@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class WaterQuality {
-  private String info;
-  private String xml;
   private String color;
+  private String xml;
 }

@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.h2owo.waterdex.model.entity.Species;
 import com.h2owo.waterdex.model.response.SpeciesResponseDTO;
+import com.h2owo.waterdex.util.Constants;
+import com.h2owo.waterdex.util.Urls;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
@@ -13,8 +15,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Component
 public class IUCN {
@@ -22,19 +24,17 @@ public class IUCN {
   private Environment environment;
 
   public int getIdByName(String name) throws IOException {
-    String apiUrl = "http://apiv3.iucnredlist.org/api/v3/species/" + name;
+    String apiUrl = Urls.IUCN_SPECIES + name;
     StringBuilder response = getResponse(apiUrl);
 
     ObjectMapper objectMapper = new ObjectMapper();
 
-    JsonNode jsonArray = null;
+    JsonNode resultNode = null;
     int taxonId = 0;
     try {
       // Parse the JSON data into an array of JSON objects
-      jsonArray = objectMapper.readTree(String.valueOf(response));
-      if (!jsonArray.isEmpty()) {
-        taxonId = jsonArray.get("result").size() > 0 ? jsonArray.get("result").get(0).get("taxonid").asInt() : 0;
-      }
+      resultNode = objectMapper.readTree(String.valueOf(response)).get(Constants.RESULT);
+      taxonId = resultNode != null && resultNode.size() > 0 ? resultNode.get(0).get("taxonid").asInt() : 0;
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -43,51 +43,55 @@ public class IUCN {
   }
 
   public SpeciesResponseDTO clasifySpecies(List<Species> allSpecies) throws IOException {
-    List<Species> species = new ArrayList<>();
-    List<Species> endangeredSpecies = new ArrayList<>();
+    List<CompletableFuture<Species>> futures = allSpecies.stream()
+            .map(specie -> CompletableFuture.supplyAsync(() -> processSpecies(specie))).toList();
 
-    for (Species specie : allSpecies) {
-      if (specie.getIucnId() != null) {
-        String apiUrl = "http://apiv3.iucnredlist.org/api/v3/threats/species/id/" + specie.getIucnId() + "/region/global";
-        StringBuilder response = getResponse(apiUrl);
-        //22694938 190279
-        ObjectMapper objectMapper = new ObjectMapper();
+    CompletableFuture<Void> allOf = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
 
-        JsonNode jsonArray = null;
-        try {
-          // Parse the JSON data into an array of JSON objects
-          jsonArray = objectMapper.readTree(String.valueOf(response));
-          if (jsonArray.get("result").size() > 0) {
-            String scope = jsonArray.get("result").get(0).get("scope").asText();
-            String severity = jsonArray.get("result").get(0).get("severity").asText();
-            String score = jsonArray.get("result").get(0).get("score").asText();
-            String invasive = jsonArray.get("result").get(0).get("invasive").asText();
+    CompletableFuture<List<Species>> speciesFuture = allOf.thenApply(
+            unused -> futures.stream()
+                    .map(CompletableFuture::join)
+                    .toList()
+    );
 
-            specie.setScope(scope);
-            specie.setSeverity(severity);
-            specie.setScore(score);
-            specie.setInvasive(invasive);
-
-            if (score.contains(":")) {
-              int impactScore = Integer.parseInt(score.split(": ")[1]);
-              if (impactScore >= 5) {
-                endangeredSpecies.add(specie);
-                continue;
-              }
-            }
-          }
-        } catch (Exception e) {
-          e.printStackTrace();
-        }
-      }
-      species.add(specie);
-    }
-
+    List<Species> species = speciesFuture.join();
+    List<Species> endangeredSpecies = species.stream()
+            .filter(specie -> specie.getScore() != null && specie.getScore().contains(":"))
+            .filter(specie -> {
+              int impactScore = Integer.parseInt(specie.getScore().split(": ")[1]);
+              return impactScore >= 5;
+            })
+            .toList();
 
     return SpeciesResponseDTO.builder()
             .species(species)
             .endangeredSpecies(endangeredSpecies)
             .build();
+  }
+
+  private Species processSpecies(Species specie) {
+    if (specie.getIucnId() != null) {
+      String apiUrl = Urls.IUCN_SPECIES_ID + specie.getIucnId() + "/region/global";
+      try {
+        StringBuilder response = getResponse(apiUrl);
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode jsonArray = objectMapper.readTree(String.valueOf(response));
+        if (jsonArray.get(Constants.RESULT).size() > 0) {
+          String scope = jsonArray.get(Constants.RESULT).get(0).get("scope").asText();
+          String severity = jsonArray.get(Constants.RESULT).get(0).get("severity").asText();
+          String score = jsonArray.get(Constants.RESULT).get(0).get("score").asText();
+          String invasive = jsonArray.get(Constants.RESULT).get(0).get("invasive").asText();
+
+          specie.setScope(scope);
+          specie.setSeverity(severity);
+          specie.setScore(score);
+          specie.setInvasive(invasive);
+        }
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    }
+    return specie;
   }
 
   private StringBuilder getResponse(String apiUrl) throws IOException {

@@ -1,7 +1,7 @@
 package com.h2owo.waterdex.controller;
 
 import com.h2owo.waterdex.model.entity.WaterQuality;
-import com.h2owo.waterdex.model.response.FlowResponse;
+import com.h2owo.waterdex.model.response.GeneralResponse;
 import com.h2owo.waterdex.model.response.InfoResponse;
 import com.h2owo.waterdex.service.IInfoService;
 import com.h2owo.waterdex.util.Constants;
@@ -60,14 +60,14 @@ public class InfoController {
    */
   @CrossOrigin(Urls.ORIGEN)
   @GetMapping("/flow")
-  public ResponseEntity<FlowResponse> getInfoFlow(
+  public ResponseEntity<GeneralResponse> getInfoFlow(
           @RequestParam(name = "lat", defaultValue = "1") double lat,
           @RequestParam(name = "long", defaultValue = "10") double lon
   ) {
 
     String flow = infoService.getWaterFlowInfo(lat, lon);
 
-    FlowResponse response = FlowResponse.builder()
+    GeneralResponse response = GeneralResponse.builder()
             .msgResponse(Constants.SUCCESS)
             .info(flow)
             .build();

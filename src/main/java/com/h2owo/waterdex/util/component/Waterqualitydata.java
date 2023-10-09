@@ -1,6 +1,7 @@
 package com.h2owo.waterdex.util.component;
 
 import com.h2owo.waterdex.util.Constants;
+import com.h2owo.waterdex.util.Urls;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -21,7 +22,7 @@ public class Waterqualitydata {
 
     try {
       // Define the base URL
-      String baseUrl = "https://www.waterqualitydata.us/data/Result/search";
+      String baseUrl = Urls.WATER_QUALITY;
 
       // Encode query parameters (optional but recommended)
       String lat = URLEncoder.encode(String.valueOf(latitude), StandardCharsets.UTF_8);

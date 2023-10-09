@@ -3,6 +3,7 @@ package com.h2owo.waterdex.util.component;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -11,6 +12,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 @Component
+@Slf4j
 public class CompletableFutures {
 
   @Autowired
@@ -43,7 +45,7 @@ public class CompletableFutures {
       }
 
     } catch (InterruptedException | ExecutionException e) {
-      e.printStackTrace();
+      log.error(e.toString());
     }
 
     return info;
@@ -84,7 +86,7 @@ public class CompletableFutures {
   }
 
   public ArrayNode getSpeciesFromID(String ID) {
-    List<String> chars = List.of("fish", "marine", "micro", "mammal", "whale", "shark",
+    List<String> chars = List.of("fish", "marine", "mammal", "whale", "shark",
             "aquatic", "sinus");
 
     // Create a list of CompletableFuture tasks

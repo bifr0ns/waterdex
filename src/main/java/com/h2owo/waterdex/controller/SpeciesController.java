@@ -1,7 +1,6 @@
 package com.h2owo.waterdex.controller;
 
-import com.h2owo.waterdex.model.entity.Species;
-import com.h2owo.waterdex.model.response.SpecieResponse;
+import com.h2owo.waterdex.model.response.GeneralResponse;
 import com.h2owo.waterdex.model.response.SpeciesResponse;
 import com.h2owo.waterdex.model.response.SpeciesResponseDTO;
 import com.h2owo.waterdex.service.ISpeciesService;
@@ -29,7 +28,7 @@ public class SpeciesController {
 
   @CrossOrigin(Urls.ORIGEN)
   @GetMapping("")
-  public ResponseEntity<SpeciesResponse> getInfo(
+  public ResponseEntity<SpeciesResponse> getSpecies(
           @RequestParam(name = "lat", defaultValue = "1") double lat,
           @RequestParam(name = "long", defaultValue = "10") double lon
   ) {
@@ -49,15 +48,15 @@ public class SpeciesController {
 
   @CrossOrigin(Urls.ORIGEN)
   @GetMapping("/{name}")
-  public ResponseEntity<SpecieResponse> getSpecie(
+  public ResponseEntity<GeneralResponse> getSpecie(
           @PathVariable String name
   ) {
 
-    Species specie = speciesService.getSpecie(name);
+    String info = speciesService.getSpecie(name);
 
-    SpecieResponse response = SpecieResponse.builder()
+    GeneralResponse response = GeneralResponse.builder()
             .msgResponse(Constants.SUCCESS)
-            .specie(specie)
+            .info(info)
             .build();
 
     return new ResponseEntity<>(
