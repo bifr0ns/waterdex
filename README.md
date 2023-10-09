@@ -7,6 +7,10 @@ helps us analyze water near us, shows us species and endangered species, and how
 where does the water we are at come from.
 Using Java as the backend technology.
 
+There's a live version of the backend that you could [test](http://waterdex.eu-central-1.elasticbeanstalk.com/info/flow?lat=17.938600&long=-102.238269) with [postman](https://www.postman.com/downloads/).
+
+You can find the code of frontend [here](https://github.com/DianaBCG/waterdex).
+
 ## 🛠️ Prerequisites
 
 Before you begin, ensure you have met the following requirements:
@@ -41,7 +45,14 @@ and [IUCN Red List](https://apiv3.iucnredlist.org/api/v3/docs), also you can cho
 
 The application has four endpoints
 
-`GET /info` Request:
+`GET /info` LIVE Request:
+```bash
+   curl -X 'GET' \
+  'http://waterdex.eu-central-1.elasticbeanstalk.com/info?lat=1&long=2' \
+  -H 'accept: application/json'
+   ```
+
+`GET /info` localhost Request:
 ```bash
    curl -X 'GET' \
   'https://localhost:8080/info?lat=1&long=2' \
@@ -60,7 +71,7 @@ Response:
 `GET /info/flow` Request:
 ```bash
    curl -X 'GET' \
-  'https://localhost:8080/info/flow?lat=0.9050&long=89.6091' \
+  'http://waterdex.eu-central-1.elasticbeanstalk.com/info/flow?lat=0.9050&long=89.6091' \
   -H 'accept: application/json'
    ```
 Response:
@@ -74,7 +85,7 @@ Response:
 `GET /species` Request:
 ```bash
    curl -X 'GET' \
-  'https://localhost:8080/species?lat=0.9050&long=89.6091' \
+  'http://waterdex.eu-central-1.elasticbeanstalk.com/species?lat=0.9050&long=89.6091' \
   -H 'accept: application/json'
    ```
 Response:
@@ -161,7 +172,7 @@ Response:
 `GET/species/{name}` Request:
 ```bash
    curl -X 'GET' \
-  'https://localhost:8080/species/osprey' \
+  'http://waterdex.eu-central-1.elasticbeanstalk.com/species/osprey' \
   -H 'accept: application/json'
    ```
 Response:
