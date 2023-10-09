@@ -4,7 +4,7 @@
 
 Project made in the NASA Space Apps Challenge Hackaton, based on location
 helps us analyze water near us, shows us species and endangered species, and how to protect them, and we could find out
-where does that water we are come from.
+where does the water we are at come from.
 Using Java as the backend technology.
 
 ## 🛠️ Prerequisites
